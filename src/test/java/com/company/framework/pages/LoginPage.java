@@ -29,6 +29,7 @@ public class LoginPage {
         driver.findElement(usernameField).sendKeys(username);
         driver.findElement(passwordField).sendKeys(password);
         driver.findElement(submitButton).click();
+
     }
 
     public String getSuccessText() {
