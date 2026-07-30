@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE suite SYSTEM "https://testng.org/testng-1.0.dtd">
+<suite name="OrangeHRM Smoke Suite">
+
+    <!-- Listener to trigger ExtentReports -->
+    <listeners>
+        <listener class-name="com.orangehrm.listeners.TestListener"/>
+    </listeners>
+
+    <!-- Group Filter: Include only smoke tests -->
+    <groups>
+        <run>
+            <include name="smoke"/>
+        </run>
+    </groups>
+
+    <test name="Smoke Tests">
+        <classes>
+            <class name="com.orangehrm.tests.LoginTest"/>
+            <class name="com.orangehrm.tests.DashboardTest"/>
+            <class name="com.orangehrm.tests.AdminTest"/>
+            <class name="com.orangehrm.tests.PIMTest"/>
+            <class name="com.orangehrm.tests.LeaveTest"/>
+            <class name="com.orangehrm.tests.RecruitmentTest"/>
+        </classes>
+    </test>
+</suite>
