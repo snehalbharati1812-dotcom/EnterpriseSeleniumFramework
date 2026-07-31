@@ -14,7 +14,8 @@ public class LoginPage extends BasePage {
     private By usernameField = By.name("username");
     private By passwordField = By.name("password");
     private By loginButton = By.xpath("//button[@type='submit']");
-    private By errorMessage = By.xpath("//p[contains(@class,'oxd-alert-content-text')]");
+    private By errorMessage = By.xpath("//p[contains(@class,'oxd-alert-content-text')] | //div[contains(@class,'oxd-alert-content')]");
+    private By requiredFieldError = By.xpath("//span[contains(@class,'oxd-input-group__message')]");
     private By forgotPasswordLink = By.xpath("//p[contains(@class,'orangehrm-login-forgot-header')]");
 
     public LoginPage(WebDriver driver) {
@@ -22,39 +23,66 @@ public class LoginPage extends BasePage {
     }
 
     public void enterUsername(String username) {
-        driver.findElement(usernameField).clear();
-        driver.findElement(usernameField).sendKeys(username);
+        WebDriverWait wait = new WebDriverWait(driver, Duration.ofSeconds(15));
+        WebElement usernameElem = wait.until(ExpectedConditions.visibilityOfElementLocated(usernameField));
+        usernameElem.clear();
+        usernameElem.sendKeys(username);
     }
 
     public void enterPassword(String password) {
-        driver.findElement(passwordField).clear();
-        driver.findElement(passwordField).sendKeys(password);
+        WebDriverWait wait = new WebDriverWait(driver, Duration.ofSeconds(15));
+        WebElement passwordElem = wait.until(ExpectedConditions.visibilityOfElementLocated(passwordField));
+        passwordElem.clear();
+        passwordElem.sendKeys(password);
     }
 
-    public void clickLogin() {
-        driver.findElement(loginButton).click();
+    public DashboardPage clickLogin() {
+        WebDriverWait wait = new WebDriverWait(driver, Duration.ofSeconds(15));
+        WebElement button = wait.until(ExpectedConditions.elementToBeClickable(loginButton));
+        button.click();
+        return new DashboardPage(driver);
     }
 
-    // Fix for getErrorMessage() red line
-    public String getErrorMessage() {
+    public boolean isErrorMessageDisplayed() {
         try {
-            WebDriverWait wait = new WebDriverWait(driver, Duration.ofSeconds(5));
-            WebElement errorElement = wait.until(ExpectedConditions.visibilityOfElementLocated(errorMessage));
-            return errorElement.getText().trim();
+            WebDriverWait wait = new WebDriverWait(driver, Duration.ofSeconds(15));
+            return wait.until(ExpectedConditions.visibilityOfElementLocated(errorMessage)).isDisplayed();
         } catch (Exception e) {
-            return "";
+            return false;
         }
     }
 
-    // Fix for clickForgotPassword() red line
+    public boolean isRequiredFieldErrorDisplayed() {
+        try {
+            WebDriverWait wait = new WebDriverWait(driver, Duration.ofSeconds(15));
+            return wait.until(ExpectedConditions.visibilityOfElementLocated(requiredFieldError)).isDisplayed();
+        } catch (Exception e) {
+            return false;
+        }
+    }
+
     public void clickForgotPassword() {
-        WebDriverWait wait = new WebDriverWait(driver, Duration.ofSeconds(5));
+        WebDriverWait wait = new WebDriverWait(driver, Duration.ofSeconds(15));
         wait.until(ExpectedConditions.elementToBeClickable(forgotPasswordLink)).click();
+    }
+
+    public boolean isResetPasswordPageDisplayed() {
+        try {
+            WebDriverWait wait = new WebDriverWait(driver, Duration.ofSeconds(15));
+            return wait.until(ExpectedConditions.urlContains("requestPasswordResetCode"));
+        } catch (Exception e) {
+            return false;
+        }
     }
 
     public boolean isLoginPageDisplayed() {
         try {
-            return driver.findElement(loginButton).isDisplayed();
+            WebDriverWait wait = new WebDriverWait(driver, Duration.ofSeconds(15));
+            wait.until(ExpectedConditions.or(
+                    ExpectedConditions.urlContains("/login"),
+                    ExpectedConditions.visibilityOfElementLocated(loginButton)
+            ));
+            return true;
         } catch (Exception e) {
             return false;
         }

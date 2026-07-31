@@ -2,28 +2,34 @@ package com.orangehrm.pages;
 
 import org.openqa.selenium.By;
 import org.openqa.selenium.WebDriver;
+import org.openqa.selenium.WebElement;
+import org.openqa.selenium.support.ui.ExpectedConditions;
+import org.openqa.selenium.support.ui.WebDriverWait;
+
+import java.time.Duration;
 
 public class AdminPage extends BasePage {
 
-    private By adminHeader = By.xpath("//h6[contains(@class,'oxd-topbar-header-breadcrumb-module')]");
-    private By usernameSearchInput = By.xpath("(//input[@class='oxd-input oxd-input--active'])[2]");
-    private By searchButton = By.xpath("//button[@type='submit']");
-    private By resetButton = By.xpath("//button[contains(.,'Reset')]");
+    // Using normalize-space() to prevent whitespace/formatting locator mismatches
+    private By adminMenu = By.xpath("//span[text()='Admin']/parent::a");
+    private By adminHeader = By.xpath("//h6[normalize-space()='Admin']");
 
     public AdminPage(WebDriver driver) {
         super(driver);
     }
 
-    public String getAdminHeaderText() {
-        return getText(adminHeader);
+    public void navigateToAdminMenu() {
+        WebDriverWait wait = new WebDriverWait(driver, Duration.ofSeconds(15));
+        WebElement menuElem = wait.until(ExpectedConditions.elementToBeClickable(adminMenu));
+        menuElem.click();
     }
 
-    public void searchUser(String username) {
-        type(usernameSearchInput, username);
-        click(searchButton);
-    }
-
-    public void clickReset() {
-        click(resetButton);
+    public boolean isAdminHeaderDisplayed() {
+        try {
+            WebDriverWait wait = new WebDriverWait(driver, Duration.ofSeconds(15));
+            return wait.until(ExpectedConditions.visibilityOfElementLocated(adminHeader)).isDisplayed();
+        } catch (Exception e) {
+            return false;
+        }
     }
 }

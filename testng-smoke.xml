@@ -7,13 +7,6 @@
         <listener class-name="com.orangehrm.listeners.TestListener"/>
     </listeners>
 
-    <!-- Group Filter: Include only smoke tests -->
-    <groups>
-        <run>
-            <include name="smoke"/>
-        </run>
-    </groups>
-
     <test name="Smoke Tests">
         <classes>
             <class name="com.orangehrm.tests.LoginTest"/>

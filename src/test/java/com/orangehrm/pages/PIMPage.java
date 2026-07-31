@@ -2,28 +2,29 @@ package com.orangehrm.pages;
 
 import org.openqa.selenium.By;
 import org.openqa.selenium.WebDriver;
+import org.openqa.selenium.support.ui.ExpectedConditions;
+import org.openqa.selenium.support.ui.WebDriverWait;
+import java.time.Duration;
 
 public class PIMPage extends BasePage {
-
-    private By pimHeader = By.xpath("//h6[contains(@class,'oxd-topbar-header-breadcrumb-module')]");
-    private By addEmployeeTab = By.xpath("//a[text()='Add Employee']");
-    private By employeeNameInput = By.xpath("(//input[@placeholder='Type for hints...'])[1]");
-    private By searchButton = By.xpath("//button[@type='submit']");
+    private By pimMenu = By.xpath("//a[contains(@href, 'pim')]");
+    private By pimHeader = By.xpath("//h6[contains(@class,'oxd-topbar-header-breadcrumb')]");
 
     public PIMPage(WebDriver driver) {
         super(driver);
     }
 
-    public String getPIMHeaderText() {
-        return getText(pimHeader);
+    public void navigateToPIMMenu() {
+        WebDriverWait wait = new WebDriverWait(driver, Duration.ofSeconds(15));
+        wait.until(ExpectedConditions.elementToBeClickable(pimMenu)).click();
     }
 
-    public void clickAddEmployee() {
-        click(addEmployeeTab);
-    }
-
-    public void searchEmployee(String name) {
-        type(employeeNameInput, name);
-        click(searchButton);
+    public boolean isPIMHeaderDisplayed() {
+        try {
+            WebDriverWait wait = new WebDriverWait(driver, Duration.ofSeconds(15));
+            return wait.until(ExpectedConditions.visibilityOfElementLocated(pimHeader)).isDisplayed();
+        } catch (Exception e) {
+            return false;
+        }
     }
 }

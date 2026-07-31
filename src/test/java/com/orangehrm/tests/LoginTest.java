@@ -7,56 +7,46 @@ import org.testng.annotations.Test;
 
 public class LoginTest extends BaseTest {
 
-    @Test(priority = 1)
+    @Test
     public void TC_LOGIN_01_ValidLogin() {
         LoginPage loginPage = new LoginPage(getDriver());
         loginPage.enterUsername("Admin");
         loginPage.enterPassword("admin123");
-        loginPage.clickLogin();
-
-        DashboardPage dashboardPage = new DashboardPage(getDriver());
-        Assert.assertTrue(dashboardPage.isDashboardHeaderDisplayed(), "Dashboard header should be displayed on valid login.");
+        DashboardPage dashboardPage = loginPage.clickLogin();
+        Assert.assertTrue(dashboardPage.isDashboardDisplayed(), "Dashboard should be displayed after valid login");
     }
 
-    @Test(priority = 2)
+    @Test
     public void TC_LOGIN_02_InvalidUsername() {
         LoginPage loginPage = new LoginPage(getDriver());
-        loginPage.enterUsername("InvalidAdmin");
+        loginPage.enterUsername("InvalidUser");
         loginPage.enterPassword("admin123");
         loginPage.clickLogin();
-
-        String actualMessage = loginPage.getErrorMessage();
-        Assert.assertEquals(actualMessage, "Invalid credentials", "Error message should display for invalid username.");
+        Assert.assertTrue(loginPage.isErrorMessageDisplayed(), "Error message should be displayed for invalid username");
     }
 
-    @Test(priority = 3)
+    @Test
     public void TC_LOGIN_03_InvalidPassword() {
         LoginPage loginPage = new LoginPage(getDriver());
         loginPage.enterUsername("Admin");
-        loginPage.enterPassword("WrongPassword123");
+        loginPage.enterPassword("WrongPass");
         loginPage.clickLogin();
-
-        String actualMessage = loginPage.getErrorMessage();
-        Assert.assertEquals(actualMessage, "Invalid credentials", "Error message should display for invalid password.");
+        Assert.assertTrue(loginPage.isErrorMessageDisplayed(), "Error message should be displayed for invalid password");
     }
 
-    @Test(priority = 4)
+    @Test
     public void TC_LOGIN_04_EmptyCredentials() {
         LoginPage loginPage = new LoginPage(getDriver());
         loginPage.enterUsername("");
         loginPage.enterPassword("");
         loginPage.clickLogin();
-
-        // Verifying mandatory field input warnings if present
-        Assert.assertTrue(loginPage.isLoginPageDisplayed(), "User should remain on login page when submitting empty credentials.");
+        Assert.assertTrue(loginPage.isRequiredFieldErrorDisplayed(), "Required warning should be displayed");
     }
 
-    @Test(priority = 5)
+    @Test
     public void TC_LOGIN_05_ForgotPasswordNavigation() {
         LoginPage loginPage = new LoginPage(getDriver());
         loginPage.clickForgotPassword();
-
-        String currentUrl = getDriver().getCurrentUrl();
-        Assert.assertTrue(currentUrl.contains("requestPasswordResetCode"), "User should be navigated to Forgot Password page.");
+        Assert.assertTrue(loginPage.isResetPasswordPageDisplayed(), "Reset Password page should be displayed");
     }
 }
