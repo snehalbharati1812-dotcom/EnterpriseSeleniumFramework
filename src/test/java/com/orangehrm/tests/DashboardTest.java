@@ -8,30 +8,32 @@ import org.testng.annotations.Test;
 
 public class DashboardTest extends BaseTest {
 
-    // 1. Declare dashboardPage variable here
+    private LoginPage loginPage;
     private DashboardPage dashboardPage;
 
     @BeforeMethod(alwaysRun = true)
-    public void login() {
-        LoginPage loginPage = new LoginPage(getDriver());
+    public void loginBeforeTest() {
+        loginPage = new LoginPage(getDriver());
         loginPage.enterUsername("Admin");
         loginPage.enterPassword("admin123");
-        loginPage.clickLogin();
-        dashboardPage = new DashboardPage(getDriver());
+        dashboardPage = loginPage.clickLogin();
     }
 
-    @Test(priority = 1)
-    public void TC_DASH_01_VerifyDashboardHeader() {
+    @Test(priority = 1, groups = {"smoke", "regression"})
+    public void verifyDashboardHeader() {
         boolean isHeaderDisplayed = dashboardPage.isDashboardHeaderDisplayed();
         Assert.assertTrue(isHeaderDisplayed, "Dashboard header should be displayed.");
     }
 
-    @Test(priority = 2)
-    public void TC_DASH_06_VerifyLogoutFunctionality() {
+    @Test(priority = 2, groups = {"smoke", "regression"})
+    public void verifyLogout() {
         dashboardPage.clickUserProfile();
-        dashboardPage.clickLogout(); // Calling method without assignment if void
+        dashboardPage.clickLogout();
 
-        LoginPage loginPage = new LoginPage(getDriver());
-        Assert.assertTrue(loginPage.isLoginPageDisplayed(), "User should be redirected to login page.");
+        // Instantiate fresh LoginPage instance post-logout to evaluate redirected URL/elements
+        LoginPage postLogoutLoginPage = new LoginPage(getDriver());
+        boolean isLoginPageDisplayed = postLogoutLoginPage.isLoginPageDisplayed();
+
+        Assert.assertTrue(isLoginPageDisplayed, "User should be redirected to Login page after logout.");
     }
 }

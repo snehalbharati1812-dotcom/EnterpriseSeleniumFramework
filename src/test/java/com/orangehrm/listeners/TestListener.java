@@ -10,13 +10,19 @@ import org.testng.ITestResult;
 
 public class TestListener implements ITestListener {
 
-    private static ExtentReports extent = new ExtentReports();
-    private static ExtentSparkReporter spark = new ExtentSparkReporter("reports/ExtentReport.html");
+    private static ExtentReports extent;
+    private static ExtentSparkReporter spark;
     private static ThreadLocal<ExtentTest> test = new ThreadLocal<>();
 
     @Override
     public void onStart(ITestContext context) {
-        extent.attachReporter(spark);
+        if (extent == null) {
+            extent = new ExtentReports();
+            spark = new ExtentSparkReporter("reports/ExtentReport.html");
+            spark.config().setReportName("Automation Test Results");
+            spark.config().setDocumentTitle("Test Execution Report");
+            extent.attachReporter(spark);
+        }
     }
 
     @Override
@@ -27,21 +33,29 @@ public class TestListener implements ITestListener {
 
     @Override
     public void onTestSuccess(ITestResult result) {
-        test.get().log(Status.PASS, "Test Passed");
+        if (test.get() != null) {
+            test.get().log(Status.PASS, "Test Passed");
+        }
     }
 
     @Override
     public void onTestFailure(ITestResult result) {
-        test.get().log(Status.FAIL, result.getThrowable());
+        if (test.get() != null) {
+            test.get().log(Status.FAIL, result.getThrowable());
+        }
     }
 
     @Override
     public void onTestSkipped(ITestResult result) {
-        test.get().log(Status.SKIP, "Test Skipped");
+        if (test.get() != null) {
+            test.get().log(Status.SKIP, "Test Skipped");
+        }
     }
 
     @Override
     public void onFinish(ITestContext context) {
-        // BUG 1 (Intentional): extent.flush() is omitted here so reports won't write out initially
+        if (extent != null) {
+            extent.flush();
+        }
     }
 }

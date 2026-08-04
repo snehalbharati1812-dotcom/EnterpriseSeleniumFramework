@@ -10,7 +10,7 @@ import java.time.Duration;
 
 public class WaitUtils {
 
-
+    // स्लो नेटवर्कवरही टेस्ट फेल होऊ नये म्हणून २-३० सेकंदांचा वेट सेट केला आहे
     private static final int DEFAULT_TIMEOUT = 25;
 
     public static WebElement waitForVisibility(WebDriver driver, By locator) {

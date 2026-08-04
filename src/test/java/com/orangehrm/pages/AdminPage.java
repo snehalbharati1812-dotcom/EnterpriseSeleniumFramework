@@ -2,28 +2,71 @@ package com.orangehrm.pages;
 
 import org.openqa.selenium.By;
 import org.openqa.selenium.WebDriver;
+import org.openqa.selenium.WebElement;
+import org.openqa.selenium.support.ui.ExpectedConditions;
+import org.openqa.selenium.support.ui.WebDriverWait;
+
+import java.time.Duration;
 
 public class AdminPage extends BasePage {
 
-    private By adminHeader = By.xpath("//h6[contains(@class,'oxd-topbar-header-breadcrumb-module')]");
+    // Locators
+    private By adminMenu = By.xpath("//span[text()='Admin']/parent::a");
+    private By adminHeader = By.xpath("//h6[normalize-space()='Admin']");
     private By usernameSearchInput = By.xpath("(//input[@class='oxd-input oxd-input--active'])[2]");
-    private By searchButton = By.xpath("//button[@type='submit']");
-    private By resetButton = By.xpath("//button[contains(.,'Reset')]");
+    private By searchButton = By.xpath("//button[normalize-space()='Search']");
+    private By userRecordCount = By.xpath("//span[contains(., 'Record Found') or contains(., 'Records Found')]");
 
+    // Constructor
     public AdminPage(WebDriver driver) {
         super(driver);
     }
 
-    public String getAdminHeaderText() {
-        return getText(adminHeader);
+    // Navigates to the Admin Section
+    public void navigateToAdminMenu() {
+        WebDriverWait wait = new WebDriverWait(driver, Duration.ofSeconds(15));
+        WebElement menuElem = wait.until(ExpectedConditions.elementToBeClickable(adminMenu));
+        menuElem.click();
     }
 
-    public void searchUser(String username) {
-        type(usernameSearchInput, username);
-        click(searchButton);
+    // Verifies Admin Header Visibility
+    public boolean isAdminHeaderDisplayed() {
+        try {
+            WebDriverWait wait = new WebDriverWait(driver, Duration.ofSeconds(15));
+            return wait.until(ExpectedConditions.visibilityOfElementLocated(adminHeader)).isDisplayed();
+        } catch (Exception e) {
+            return false;
+        }
     }
 
-    public void clickReset() {
-        click(resetButton);
+    // Verifies Search Button Visibility
+    public boolean isSearchButtonDisplayed() {
+        try {
+            WebDriverWait wait = new WebDriverWait(driver, Duration.ofSeconds(15));
+            return wait.until(ExpectedConditions.visibilityOfElementLocated(searchButton)).isDisplayed();
+        } catch (Exception e) {
+            return false;
+        }
+    }
+
+    // NEW METHOD: Types username into search box and clicks Search
+    public void searchUserByUsername(String username) {
+        WebDriverWait wait = new WebDriverWait(driver, Duration.ofSeconds(10));
+        WebElement input = wait.until(ExpectedConditions.visibilityOfElementLocated(usernameSearchInput));
+        input.clear();
+        input.sendKeys(username);
+
+        WebElement searchBtn = wait.until(ExpectedConditions.elementToBeClickable(searchButton));
+        searchBtn.click();
+    }
+
+    // NEW METHOD: Checks if search results records count is displayed
+    public boolean isRecordFoundDisplayed() {
+        try {
+            WebDriverWait wait = new WebDriverWait(driver, Duration.ofSeconds(10));
+            return wait.until(ExpectedConditions.visibilityOfElementLocated(userRecordCount)).isDisplayed();
+        } catch (Exception e) {
+            return false;
+        }
     }
 }
